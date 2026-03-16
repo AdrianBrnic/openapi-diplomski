@@ -1,0 +1,468 @@
+openapi: 3.0.3
+info:
+  description: "API za upravljanje korisnicima, proizvodima i narudžbama"
+  title: Web Shop API
+  version: 1.0.0
+servers:
+- description: Local development server
+  url: http://localhost:8080/api
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/User"
+                type: array
+          description: List of users
+      summary: Get all users
+      tags:
+      - Users
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Users
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "201":
+          description: User created
+      summary: Create new user
+      tags:
+      - Users
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Users
+  /users/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: User deleted
+      summary: Delete user
+      tags:
+      - Users
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Users
+    get:
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User found
+        "404":
+          description: User not found
+      summary: Get user by ID
+      tags:
+      - Users
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Users
+    put:
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: User updated
+      summary: Update user
+      tags:
+      - Users
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Users
+  /users/{id}/orders:
+    get:
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Order"
+                type: array
+          description: List of orders for user
+      summary: Get orders for a specific user
+      tags:
+      - Orders
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+  /products:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Product"
+                type: array
+          description: List of products
+      summary: Get all products
+      tags:
+      - Products
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Products
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        "201":
+          description: Product created
+      summary: Create new product
+      tags:
+      - Products
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Products
+  /products/{id}:
+    delete:
+      parameters:
+      - description: Product ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Product deleted
+      summary: Delete product
+      tags:
+      - Products
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Products
+    get:
+      parameters:
+      - description: Product ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          description: Product found
+        "404":
+          description: Product not found
+      summary: Get product by ID
+      tags:
+      - Products
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Products
+    put:
+      parameters:
+      - description: Product ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        "200":
+          description: Product updated
+      summary: Update product
+      tags:
+      - Products
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Products
+  /orders:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Order"
+                type: array
+          description: List of orders
+      summary: Get all orders
+      tags:
+      - Orders
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+        required: true
+      responses:
+        "201":
+          description: Order created
+      summary: Create new order
+      tags:
+      - Orders
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+  /orders/{id}:
+    delete:
+      parameters:
+      - description: Order ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Order deleted
+      summary: Delete order
+      tags:
+      - Orders
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+    get:
+      parameters:
+      - description: Order ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+          description: Order found
+        "404":
+          description: Order not found
+      summary: Get order by ID
+      tags:
+      - Orders
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+    put:
+      parameters:
+      - description: Order ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+        required: true
+      responses:
+        "200":
+          description: Order updated
+      summary: Update order
+      tags:
+      - Orders
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Orders
+components:
+  schemas:
+    User:
+      example:
+        birthday: 1995-05-10
+        createdAt: 2026-01-01T12:00:00Z
+        phone: "+385911234567"
+        name: Ivan Horvat
+        id: 1
+        email: ivan@example.com
+      properties:
+        id:
+          example: 1
+          type: integer
+        name:
+          example: Ivan Horvat
+          type: string
+        email:
+          example: ivan@example.com
+          format: email
+          type: string
+        phone:
+          example: "+385911234567"
+          type: string
+        birthday:
+          example: 1995-05-10
+          format: date
+          type: string
+        createdAt:
+          example: 2026-01-01T12:00:00Z
+          format: date-time
+          type: string
+      type: object
+    Product:
+      example:
+        createdAt: 2026-01-01T12:00:00Z
+        price: 999.99
+        name: Laptop
+        description: High performance laptop
+        id: 1
+        stock: 10
+      properties:
+        id:
+          example: 1
+          type: integer
+        name:
+          example: Laptop
+          type: string
+        description:
+          example: High performance laptop
+          type: string
+        price:
+          example: 999.99
+          format: float
+          type: number
+        stock:
+          example: 10
+          type: integer
+        createdAt:
+          example: 2026-01-01T12:00:00Z
+          format: date-time
+          type: string
+      type: object
+    Order:
+      example:
+        createdAt: 2026-01-01T12:00:00Z
+        quantity: 3
+        productId: 2
+        totalPrice: 2999.97
+        id: 1
+        userId: 1
+        status: CREATED
+      properties:
+        id:
+          example: 1
+          type: integer
+        userId:
+          example: 1
+          type: integer
+        productId:
+          example: 2
+          type: integer
+        quantity:
+          example: 3
+          type: integer
+        totalPrice:
+          example: 2999.97
+          format: float
+          type: number
+        status:
+          enum:
+          - CREATED
+          - PAID
+          - SHIPPED
+          - DELIVERED
+          example: CREATED
+          type: string
+        createdAt:
+          example: 2026-01-01T12:00:00Z
+          format: date-time
+          type: string
+      type: object
