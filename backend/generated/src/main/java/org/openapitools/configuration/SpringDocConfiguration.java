@@ -20,7 +20,20 @@ public class SpringDocConfiguration {
                         new Info()
                                 .title("Web Shop API")
                                 .description("API za upravljanje korisnicima, proizvodima i narudžbama")
-                                .version("1.0.0")
+                                .contact(
+                                        new Contact()
+                                                .name("Web Shop API Support")
+                                                .email("support@webshop.hr")
+                                )
+                                .version("2.0.0")
+                )
+                .components(
+                        new Components()
+                                .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                )
                 )
         ;
     }

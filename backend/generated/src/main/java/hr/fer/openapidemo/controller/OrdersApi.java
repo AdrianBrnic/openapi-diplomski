@@ -5,7 +5,13 @@
  */
 package hr.fer.openapidemo.controller;
 
-import hr.fer.openapidemo.model.Order;
+import hr.fer.openapidemo.model.CreateOrderRequest;
+import hr.fer.openapidemo.model.ErrorResponse;
+import org.springframework.lang.Nullable;
+import hr.fer.openapidemo.model.OrderPage;
+import hr.fer.openapidemo.model.OrderResponse;
+import hr.fer.openapidemo.model.OrderStatus;
+import hr.fer.openapidemo.model.UpdateOrderStatusRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,181 +32,327 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-16T17:59:15.638880700+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-21T18:23:10.966472300+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
 @Validated
-@Tag(name = "Orders", description = "the Orders API")
+@Tag(name = "Orders", description = "Upravljanje narudžbama")
 public interface OrdersApi {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
 
-    String PATH_ORDERS_GET = "/orders";
+    String PATH_CREATE_ORDER = "/orders";
     /**
-     * GET /orders : Get all orders
+     * POST /orders : Kreiraj novu narudžbu
      *
-     * @return List of orders (status code 200)
+     * @param createOrderRequest  (required)
+     * @return Narudžba kreirana (status code 201)
+     *         or Neispravan zahtjev — pogreška u validaciji podataka (status code 400)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Nedovoljno zaliha za jedan ili više proizvoda (status code 422)
      */
     @Operation(
-        operationId = "ordersGet",
-        summary = "Get all orders",
+        operationId = "createOrder",
+        summary = "Kreiraj novu narudžbu",
         tags = { "Orders" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "List of orders", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Order.class)))
-            })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = OrdersApi.PATH_ORDERS_GET,
-        produces = { "application/json" }
-    )
-    default ResponseEntity<List<Order>> ordersGet(
-        
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"createdAt\" : \"2026-01-01T12:00:00Z\", \"quantity\" : 3, \"productId\" : 2, \"totalPrice\" : 2999.97, \"id\" : 1, \"userId\" : 1, \"status\" : \"CREATED\" }, { \"createdAt\" : \"2026-01-01T12:00:00Z\", \"quantity\" : 3, \"productId\" : 2, \"totalPrice\" : 2999.97, \"id\" : 1, \"userId\" : 1, \"status\" : \"CREATED\" } ]";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_ORDERS_ID_DELETE = "/orders/{id}";
-    /**
-     * DELETE /orders/{id} : Delete order
-     *
-     * @param id Order ID (required)
-     * @return Order deleted (status code 204)
-     */
-    @Operation(
-        operationId = "ordersIdDelete",
-        summary = "Delete order",
-        tags = { "Orders" },
-        responses = {
-            @ApiResponse(responseCode = "204", description = "Order deleted")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.DELETE,
-        value = OrdersApi.PATH_ORDERS_ID_DELETE
-    )
-    default ResponseEntity<Void> ordersIdDelete(
-        @NotNull @Parameter(name = "id", description = "Order ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
-    ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_ORDERS_ID_GET = "/orders/{id}";
-    /**
-     * GET /orders/{id} : Get order by ID
-     *
-     * @param id Order ID (required)
-     * @return Order found (status code 200)
-     *         or Order not found (status code 404)
-     */
-    @Operation(
-        operationId = "ordersIdGet",
-        summary = "Get order by ID",
-        tags = { "Orders" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Order found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Order.class))
+            @ApiResponse(responseCode = "201", description = "Narudžba kreirana", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Order not found")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = OrdersApi.PATH_ORDERS_ID_GET,
-        produces = { "application/json" }
-    )
-    default ResponseEntity<Order> ordersIdGet(
-        @NotNull @Parameter(name = "id", description = "Order ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"createdAt\" : \"2026-01-01T12:00:00Z\", \"quantity\" : 3, \"productId\" : 2, \"totalPrice\" : 2999.97, \"id\" : 1, \"userId\" : 1, \"status\" : \"CREATED\" }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_ORDERS_ID_PUT = "/orders/{id}";
-    /**
-     * PUT /orders/{id} : Update order
-     *
-     * @param id Order ID (required)
-     * @param order  (required)
-     * @return Order updated (status code 200)
-     */
-    @Operation(
-        operationId = "ordersIdPut",
-        summary = "Update order",
-        tags = { "Orders" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Order updated")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.PUT,
-        value = OrdersApi.PATH_ORDERS_ID_PUT,
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<Void> ordersIdPut(
-        @NotNull @Parameter(name = "id", description = "Order ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
-        @Parameter(name = "Order", description = "", required = true) @Valid @RequestBody Order order
-    ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_ORDERS_POST = "/orders";
-    /**
-     * POST /orders : Create new order
-     *
-     * @param order  (required)
-     * @return Order created (status code 201)
-     */
-    @Operation(
-        operationId = "ordersPost",
-        summary = "Create new order",
-        tags = { "Orders" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Order created")
+            @ApiResponse(responseCode = "400", description = "Neispravan zahtjev — pogreška u validaciji podataka", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "422", description = "Nedovoljno zaliha za jedan ili više proizvoda", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
         method = RequestMethod.POST,
-        value = OrdersApi.PATH_ORDERS_POST,
+        value = OrdersApi.PATH_CREATE_ORDER,
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> ordersPost(
-        @Parameter(name = "Order", description = "", required = true) @Valid @RequestBody Order order
+    default ResponseEntity<OrderResponse> createOrder(
+        @Parameter(name = "CreateOrderRequest", description = "", required = true) @Valid @RequestBody CreateOrderRequest createOrderRequest
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"totalPrice\" : 30.0, \"id\" : 1, \"userId\" : 1, \"items\" : [ { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" }, { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" } ], \"status\" : \"CREATED\", \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_DELETE_ORDER = "/orders/{id}";
+    /**
+     * DELETE /orders/{id} : Otkaži narudžbu
+     *
+     * @param id Jedinstveni identifikator resursa (required)
+     * @return Narudžba otkazana (status code 204)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Traženi resurs nije pronađen (status code 404)
+     */
+    @Operation(
+        operationId = "deleteOrder",
+        summary = "Otkaži narudžbu",
+        tags = { "Orders" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Narudžba otkazana"),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = OrdersApi.PATH_DELETE_ORDER,
+        produces = { "application/json" }
+    )
+    default ResponseEntity<Void> deleteOrder(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_GET_ORDER_BY_ID = "/orders/{id}";
+    /**
+     * GET /orders/{id} : Dohvati narudžbu po ID-u
+     *
+     * @param id Jedinstveni identifikator resursa (required)
+     * @return Narudžba pronađena (status code 200)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Traženi resurs nije pronađen (status code 404)
+     */
+    @Operation(
+        operationId = "getOrderById",
+        summary = "Dohvati narudžbu po ID-u",
+        tags = { "Orders" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Narudžba pronađena", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = OrdersApi.PATH_GET_ORDER_BY_ID,
+        produces = { "application/json" }
+    )
+    default ResponseEntity<OrderResponse> getOrderById(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"totalPrice\" : 30.0, \"id\" : 1, \"userId\" : 1, \"items\" : [ { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" }, { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" } ], \"status\" : \"CREATED\", \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_GET_ORDERS = "/orders";
+    /**
+     * GET /orders : Dohvati sve narudžbe
+     *
+     * @param page Broj stranice (počinje od 0) (optional, default to 0)
+     * @param size Broj elemenata po stranici (optional, default to 20)
+     * @param status Filter po statusu narudžbe (optional)
+     * @return Straničena lista narudžbi (status code 200)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     */
+    @Operation(
+        operationId = "getOrders",
+        summary = "Dohvati sve narudžbe",
+        tags = { "Orders" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Straničena lista narudžbi", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = OrderPage.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = OrdersApi.PATH_GET_ORDERS,
+        produces = { "application/json" }
+    )
+    default ResponseEntity<OrderPage> getOrders(
+        @Min(value = 0) @Parameter(name = "page", description = "Broj stranice (počinje od 0)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(value = 1) @Max(value = 100) @Parameter(name = "size", description = "Broj elemenata po stranici", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+        @Parameter(name = "status", description = "Filter po statusu narudžbe", in = ParameterIn.QUERY) @Valid @RequestParam(value = "status", required = false) @Nullable OrderStatus status
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"page\" : { \"number\" : 0, \"size\" : 20, \"totalPages\" : 3, \"totalElements\" : 42 }, \"content\" : [ { \"createdAt\" : \"2026-03-10T12:00:00Z\", \"totalPrice\" : 30.0, \"id\" : 1, \"userId\" : 1, \"items\" : [ { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" }, { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" } ], \"status\" : \"CREATED\", \"updatedAt\" : \"2026-03-10T12:00:00Z\" }, { \"createdAt\" : \"2026-03-10T12:00:00Z\", \"totalPrice\" : 30.0, \"id\" : 1, \"userId\" : 1, \"items\" : [ { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" }, { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" } ], \"status\" : \"CREATED\", \"updatedAt\" : \"2026-03-10T12:00:00Z\" } ] }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_UPDATE_ORDER_STATUS = "/orders/{id}";
+    /**
+     * PATCH /orders/{id} : Ažuriraj status narudžbe
+     *
+     * @param id Jedinstveni identifikator resursa (required)
+     * @param updateOrderStatusRequest  (required)
+     * @return Status narudžbe ažuriran (status code 200)
+     *         or Neispravan zahtjev — pogreška u validaciji podataka (status code 400)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Traženi resurs nije pronađen (status code 404)
+     */
+    @Operation(
+        operationId = "updateOrderStatus",
+        summary = "Ažuriraj status narudžbe",
+        tags = { "Orders" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Status narudžbe ažuriran", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Neispravan zahtjev — pogreška u validaciji podataka", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PATCH,
+        value = OrdersApi.PATH_UPDATE_ORDER_STATUS,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<OrderResponse> updateOrderStatus(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "UpdateOrderStatusRequest", description = "", required = true) @Valid @RequestBody UpdateOrderStatusRequest updateOrderStatusRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"totalPrice\" : 30.0, \"id\" : 1, \"userId\" : 1, \"items\" : [ { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" }, { \"unitPrice\" : 10.0, \"quantity\" : 3, \"productId\" : 2, \"subtotal\" : 30.0, \"id\" : 10, \"productName\" : \"Bežični miš\" } ], \"status\" : \"CREATED\", \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

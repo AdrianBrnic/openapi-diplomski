@@ -10,22 +10,22 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
 import java.util.*;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 /**
- * User
+ * UserResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-16T17:59:15.638880700+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
-public class User {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-21T18:23:10.966472300+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
+public class UserResponse {
 
-  private @Nullable Integer id;
+  private @Nullable Long id;
 
   private @Nullable String name;
 
@@ -39,7 +39,7 @@ public class User {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime createdAt;
 
-  public User id(@Nullable Integer id) {
+  public UserResponse id(@Nullable Long id) {
     this.id = id;
     return this;
   }
@@ -51,15 +51,15 @@ public class User {
   
   @Schema(name = "id", example = "1", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  public @Nullable Integer getId() {
+  public @Nullable Long getId() {
     return id;
   }
 
-  public void setId(@Nullable Integer id) {
+  public void setId(@Nullable Long id) {
     this.id = id;
   }
 
-  public User name(@Nullable String name) {
+  public UserResponse name(@Nullable String name) {
     this.name = name;
     return this;
   }
@@ -69,7 +69,7 @@ public class User {
    * @return name
    */
   
-  @Schema(name = "name", example = "Ivan Horvat", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "name", example = "Adrian Brnić", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("name")
   public @Nullable String getName() {
     return name;
@@ -79,7 +79,7 @@ public class User {
     this.name = name;
   }
 
-  public User email(@Nullable String email) {
+  public UserResponse email(@Nullable String email) {
     this.email = email;
     return this;
   }
@@ -88,8 +88,8 @@ public class User {
    * Get email
    * @return email
    */
-  @javax.validation.constraints.Email 
-  @Schema(name = "email", example = "ivan@example.com", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @jakarta.validation.constraints.Email 
+  @Schema(name = "email", example = "adrian.brnic@fer.hr", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("email")
   public @Nullable String getEmail() {
     return email;
@@ -99,7 +99,7 @@ public class User {
     this.email = email;
   }
 
-  public User phone(@Nullable String phone) {
+  public UserResponse phone(@Nullable String phone) {
     this.phone = phone;
     return this;
   }
@@ -109,7 +109,7 @@ public class User {
    * @return phone
    */
   
-  @Schema(name = "phone", example = "+385911234567", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "phone", example = "+38591000000", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("phone")
   public @Nullable String getPhone() {
     return phone;
@@ -119,7 +119,7 @@ public class User {
     this.phone = phone;
   }
 
-  public User birthday(@Nullable LocalDate birthday) {
+  public UserResponse birthday(@Nullable LocalDate birthday) {
     this.birthday = birthday;
     return this;
   }
@@ -129,7 +129,7 @@ public class User {
    * @return birthday
    */
   @Valid 
-  @Schema(name = "birthday", example = "1995-05-10", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "birthday", example = "2002-05-26", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("birthday")
   public @Nullable LocalDate getBirthday() {
     return birthday;
@@ -139,7 +139,7 @@ public class User {
     this.birthday = birthday;
   }
 
-  public User createdAt(@Nullable OffsetDateTime createdAt) {
+  public UserResponse createdAt(@Nullable OffsetDateTime createdAt) {
     this.createdAt = createdAt;
     return this;
   }
@@ -149,7 +149,7 @@ public class User {
    * @return createdAt
    */
   @Valid 
-  @Schema(name = "createdAt", example = "2026-01-01T12:00Z", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "createdAt", example = "2026-03-10T12:00:00Z", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("createdAt")
   public @Nullable OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -167,13 +167,13 @@ public class User {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    User user = (User) o;
-    return Objects.equals(this.id, user.id) &&
-        Objects.equals(this.name, user.name) &&
-        Objects.equals(this.email, user.email) &&
-        Objects.equals(this.phone, user.phone) &&
-        Objects.equals(this.birthday, user.birthday) &&
-        Objects.equals(this.createdAt, user.createdAt);
+    UserResponse userResponse = (UserResponse) o;
+    return Objects.equals(this.id, userResponse.id) &&
+        Objects.equals(this.name, userResponse.name) &&
+        Objects.equals(this.email, userResponse.email) &&
+        Objects.equals(this.phone, userResponse.phone) &&
+        Objects.equals(this.birthday, userResponse.birthday) &&
+        Objects.equals(this.createdAt, userResponse.createdAt);
   }
 
   @Override
@@ -184,7 +184,7 @@ public class User {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class User {\n");
+    sb.append("class UserResponse {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");

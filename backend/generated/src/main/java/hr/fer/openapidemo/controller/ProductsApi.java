@@ -5,7 +5,11 @@
  */
 package hr.fer.openapidemo.controller;
 
-import hr.fer.openapidemo.model.Product;
+import hr.fer.openapidemo.model.CreateProductRequest;
+import hr.fer.openapidemo.model.ErrorResponse;
+import org.springframework.lang.Nullable;
+import hr.fer.openapidemo.model.ProductPage;
+import hr.fer.openapidemo.model.ProductResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,50 +30,174 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-16T17:59:15.638880700+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-21T18:23:10.966472300+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
 @Validated
-@Tag(name = "Products", description = "the Products API")
+@Tag(name = "Products", description = "Upravljanje proizvodima")
 public interface ProductsApi {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
 
-    String PATH_PRODUCTS_GET = "/products";
+    String PATH_CREATE_PRODUCT = "/products";
     /**
-     * GET /products : Get all products
+     * POST /products : Dodaj novi proizvod
      *
-     * @return List of products (status code 200)
+     * @param createProductRequest  (required)
+     * @return Proizvod kreiran (status code 201)
+     *         or Neispravan zahtjev — pogreška u validaciji podataka (status code 400)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
      */
     @Operation(
-        operationId = "productsGet",
-        summary = "Get all products",
+        operationId = "createProduct",
+        summary = "Dodaj novi proizvod",
         tags = { "Products" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "List of products", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Product.class)))
+            @ApiResponse(responseCode = "201", description = "Proizvod kreiran", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Neispravan zahtjev — pogreška u validaciji podataka", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = ProductsApi.PATH_CREATE_PRODUCT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<ProductResponse> createProduct(
+        @Parameter(name = "CreateProductRequest", description = "", required = true) @Valid @RequestBody CreateProductRequest createProductRequest
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"price\" : 8.0, \"name\" : \"Maskica za mobitel\", \"description\" : \"Maskica za mobitel iPhone 13\", \"id\" : 1, \"stock\" : 20, \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_DELETE_PRODUCT = "/products/{id}";
+    /**
+     * DELETE /products/{id} : Obriši proizvod
+     *
+     * @param id Jedinstveni identifikator resursa (required)
+     * @return Proizvod obrisan (status code 204)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Traženi resurs nije pronađen (status code 404)
+     */
+    @Operation(
+        operationId = "deleteProduct",
+        summary = "Obriši proizvod",
+        tags = { "Products" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Proizvod obrisan"),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = ProductsApi.PATH_DELETE_PRODUCT,
+        produces = { "application/json" }
+    )
+    default ResponseEntity<Void> deleteProduct(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+
+    String PATH_GET_PRODUCT_BY_ID = "/products/{id}";
+    /**
+     * GET /products/{id} : Dohvati proizvod po ID-u
+     *
+     * @param id Jedinstveni identifikator resursa (required)
+     * @return Proizvod pronađen (status code 200)
+     *         or Traženi resurs nije pronađen (status code 404)
+     */
+    @Operation(
+        operationId = "getProductById",
+        summary = "Dohvati proizvod po ID-u",
+        tags = { "Products" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Proizvod pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = ProductsApi.PATH_PRODUCTS_GET,
+        value = ProductsApi.PATH_GET_PRODUCT_BY_ID,
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Product>> productsGet(
-        
+    default ResponseEntity<ProductResponse> getProductById(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"createdAt\" : \"2026-01-01T12:00:00Z\", \"price\" : 999.99, \"name\" : \"Laptop\", \"description\" : \"High performance laptop\", \"id\" : 1, \"stock\" : 10 }, { \"createdAt\" : \"2026-01-01T12:00:00Z\", \"price\" : 999.99, \"name\" : \"Laptop\", \"description\" : \"High performance laptop\", \"id\" : 1, \"stock\" : 10 } ]";
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"price\" : 8.0, \"name\" : \"Maskica za mobitel\", \"description\" : \"Maskica za mobitel iPhone 13\", \"id\" : 1, \"stock\" : 20, \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -80,64 +208,43 @@ public interface ProductsApi {
     }
 
 
-    String PATH_PRODUCTS_ID_DELETE = "/products/{id}";
+    String PATH_GET_PRODUCTS = "/products";
     /**
-     * DELETE /products/{id} : Delete product
+     * GET /products : Dohvati sve proizvode
      *
-     * @param id Product ID (required)
-     * @return Product deleted (status code 204)
+     * @param page Broj stranice (počinje od 0) (optional, default to 0)
+     * @param size Broj elemenata po stranici (optional, default to 20)
+     * @param sort Polje i smjer sortiranja (npr. createdAt,desc) (optional)
+     * @param minPrice Minimalna cijena filtra (optional)
+     * @param maxPrice Maksimalna cijena filtra (optional)
+     * @return Straničena lista proizvoda (status code 200)
      */
     @Operation(
-        operationId = "productsIdDelete",
-        summary = "Delete product",
+        operationId = "getProducts",
+        summary = "Dohvati sve proizvode",
         tags = { "Products" },
         responses = {
-            @ApiResponse(responseCode = "204", description = "Product deleted")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.DELETE,
-        value = ProductsApi.PATH_PRODUCTS_ID_DELETE
-    )
-    default ResponseEntity<Void> productsIdDelete(
-        @NotNull @Parameter(name = "id", description = "Product ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
-    ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_PRODUCTS_ID_GET = "/products/{id}";
-    /**
-     * GET /products/{id} : Get product by ID
-     *
-     * @param id Product ID (required)
-     * @return Product found (status code 200)
-     *         or Product not found (status code 404)
-     */
-    @Operation(
-        operationId = "productsIdGet",
-        summary = "Get product by ID",
-        tags = { "Products" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Product found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Product.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "200", description = "Straničena lista proizvoda", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProductPage.class))
+            })
         }
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = ProductsApi.PATH_PRODUCTS_ID_GET,
+        value = ProductsApi.PATH_GET_PRODUCTS,
         produces = { "application/json" }
     )
-    default ResponseEntity<Product> productsIdGet(
-        @NotNull @Parameter(name = "id", description = "Product ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
+    default ResponseEntity<ProductPage> getProducts(
+        @Min(value = 0) @Parameter(name = "page", description = "Broj stranice (počinje od 0)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(value = 1) @Max(value = 100) @Parameter(name = "size", description = "Broj elemenata po stranici", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+        @Parameter(name = "sort", description = "Polje i smjer sortiranja (npr. createdAt,desc)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "sort", required = false) @Nullable String sort,
+        @DecimalMin(value = "0") @Parameter(name = "minPrice", description = "Minimalna cijena filtra", in = ParameterIn.QUERY) @Valid @RequestParam(value = "minPrice", required = false) @Nullable Double minPrice,
+        @DecimalMin(value = "0") @Parameter(name = "maxPrice", description = "Maksimalna cijena filtra", in = ParameterIn.QUERY) @Valid @RequestParam(value = "maxPrice", required = false) @Nullable Double maxPrice
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"createdAt\" : \"2026-01-01T12:00:00Z\", \"price\" : 999.99, \"name\" : \"Laptop\", \"description\" : \"High performance laptop\", \"id\" : 1, \"stock\" : 10 }";
+                    String exampleString = "{ \"page\" : { \"number\" : 0, \"size\" : 20, \"totalPages\" : 3, \"totalElements\" : 42 }, \"content\" : [ { \"createdAt\" : \"2026-03-10T12:00:00Z\", \"price\" : 8.0, \"name\" : \"Maskica za mobitel\", \"description\" : \"Maskica za mobitel iPhone 13\", \"id\" : 1, \"stock\" : 20, \"updatedAt\" : \"2026-03-10T12:00:00Z\" }, { \"createdAt\" : \"2026-03-10T12:00:00Z\", \"price\" : 8.0, \"name\" : \"Maskica za mobitel\", \"description\" : \"Maskica za mobitel iPhone 13\", \"id\" : 1, \"stock\" : 20, \"updatedAt\" : \"2026-03-10T12:00:00Z\" } ] }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -148,59 +255,73 @@ public interface ProductsApi {
     }
 
 
-    String PATH_PRODUCTS_ID_PUT = "/products/{id}";
+    String PATH_UPDATE_PRODUCT = "/products/{id}";
     /**
-     * PUT /products/{id} : Update product
+     * PUT /products/{id} : Ažuriraj proizvod
      *
-     * @param id Product ID (required)
-     * @param product  (required)
-     * @return Product updated (status code 200)
+     * @param id Jedinstveni identifikator resursa (required)
+     * @param createProductRequest  (required)
+     * @return Proizvod ažuriran (status code 200)
+     *         or Neispravan zahtjev — pogreška u validaciji podataka (status code 400)
+     *         or Korisnik nije autenticiran ili je token istekao (status code 401)
+     *         or Traženi resurs nije pronađen (status code 404)
      */
     @Operation(
-        operationId = "productsIdPut",
-        summary = "Update product",
+        operationId = "updateProduct",
+        summary = "Ažuriraj proizvod",
         tags = { "Products" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "Product updated")
+            @ApiResponse(responseCode = "200", description = "Proizvod ažuriran", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Neispravan zahtjev — pogreška u validaciji podataka", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Korisnik nije autenticiran ili je token istekao", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Traženi resurs nije pronađen", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "bearerAuth")
         }
     )
     @RequestMapping(
         method = RequestMethod.PUT,
-        value = ProductsApi.PATH_PRODUCTS_ID_PUT,
+        value = ProductsApi.PATH_UPDATE_PRODUCT,
+        produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> productsIdPut(
-        @NotNull @Parameter(name = "id", description = "Product ID", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
-        @Parameter(name = "Product", description = "", required = true) @Valid @RequestBody Product product
+    default ResponseEntity<ProductResponse> updateProduct(
+        @NotNull @Min(value = 1L) @Parameter(name = "id", description = "Jedinstveni identifikator resursa", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "CreateProductRequest", description = "", required = true) @Valid @RequestBody CreateProductRequest createProductRequest
     ) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
-
-    String PATH_PRODUCTS_POST = "/products";
-    /**
-     * POST /products : Create new product
-     *
-     * @param product  (required)
-     * @return Product created (status code 201)
-     */
-    @Operation(
-        operationId = "productsPost",
-        summary = "Create new product",
-        tags = { "Products" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Product created")
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = ProductsApi.PATH_PRODUCTS_POST,
-        consumes = { "application/json" }
-    )
-    default ResponseEntity<Void> productsPost(
-        @Parameter(name = "Product", description = "", required = true) @Valid @RequestBody Product product
-    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"createdAt\" : \"2026-03-10T12:00:00Z\", \"price\" : 8.0, \"name\" : \"Maskica za mobitel\", \"description\" : \"Maskica za mobitel iPhone 13\", \"id\" : 1, \"stock\" : 20, \"updatedAt\" : \"2026-03-10T12:00:00Z\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"path\" : \"/api/users/5\", \"error\" : \"Not Found\", \"message\" : \"Korisnik s ID-om 5 nije pronađen\", \"timestamp\" : \"2026-03-18T10:00:00Z\", \"status\" : 404 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

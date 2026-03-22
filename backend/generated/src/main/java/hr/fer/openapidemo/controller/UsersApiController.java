@@ -1,47 +1,45 @@
 package hr.fer.openapidemo.controller;
 
-import hr.fer.openapidemo.model.Order;
-import hr.fer.openapidemo.model.User;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import hr.fer.openapidemo.model.UpdateUserRequest;
+import hr.fer.openapidemo.model.UserPage;
+import hr.fer.openapidemo.model.UserResponse;
+import hr.fer.openapidemo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.bind.annotation.RestController;
+import hr.fer.openapidemo.model.OrderPage;
+import hr.fer.openapidemo.service.OrderService;
 
-import javax.validation.constraints.*;
-import javax.validation.Valid;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Generated;
-
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-16T17:59:15.638880700+01:00[Europe/Zagreb]", comments = "Generator version: 7.20.0")
-@Controller
-@RequestMapping("${openapi.webShop.base-path:/api}")
+@RestController
+@RequiredArgsConstructor
 public class UsersApiController implements UsersApi {
 
-    private final NativeWebRequest request;
+    private final UserService userService;
+    private final OrderService orderService;
 
-    @Autowired
-    public UsersApiController(NativeWebRequest request) {
-        this.request = request;
+
+    @Override
+    public ResponseEntity<UserPage> getUsers(Integer page, Integer size, String sort) {
+        return ResponseEntity.ok(userService.getUsers(page, size, sort));
     }
 
     @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return Optional.ofNullable(request);
+    public ResponseEntity<UserResponse> getUserById(Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @Override
+    public ResponseEntity<UserResponse> updateUser(Long id, UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUser(Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+    @Override
+    public ResponseEntity<OrderPage> getOrdersByUserId(Long id, Integer page, Integer size) {
+        return ResponseEntity.ok(orderService.getOrdersByUserId(id, page, size));
+    }
 }
