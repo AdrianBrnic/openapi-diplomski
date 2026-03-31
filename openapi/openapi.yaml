@@ -1,0 +1,859 @@
+openapi: 3.1.0
+info:
+  title: Web Shop API
+  description: API za upravljanje korisnicima, proizvodima i narudžbama
+  version: 2.0.0
+  contact:
+    name: Web Shop API Support
+    email: support@webshop.hr
+
+servers:
+  - url: http://localhost:8080
+    description: Lokalni razvojni poslužitelj
+
+tags:
+  - name: Auth
+    description: Autentifikacija i autorizacija
+  - name: Users
+    description: Upravljanje korisnicima
+  - name: Products
+    description: Upravljanje proizvodima
+  - name: Orders
+    description: Upravljanje narudžbama
+
+paths:
+
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      summary: Registracija novog korisnika
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Korisnik uspješno registriran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Korisnik s tim emailom već postoji
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      summary: Prijava korisnika
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Uspješna prijava
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+
+  /users:
+    get:
+      operationId: getUsers
+      summary: Dohvati sve korisnike
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParam'
+      responses:
+        '200':
+          description: Straničena lista korisnika
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{id}:
+    get:
+      operationId: getUserById
+      summary: Dohvati korisnika po ID-u
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Korisnik pronađen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: updateUser
+      summary: Ažuriraj korisnika
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Korisnik ažuriran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      operationId: deleteUser
+      summary: Obriši korisnika
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Korisnik obrisan
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{id}/orders:
+    get:
+      operationId: getOrdersByUserId
+      summary: Dohvati narudžbe korisnika
+      tags:
+        - Users
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+      responses:
+        '200':
+          description: Straničena lista narudžbi korisnika
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /products:
+    get:
+      operationId: getProducts
+      summary: Dohvati sve proizvode
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParam'
+        - name: minPrice
+          in: query
+          description: Minimalna cijena filtra
+          schema:
+            type: number
+            format: double
+            minimum: 0
+        - name: maxPrice
+          in: query
+          description: Maksimalna cijena filtra
+          schema:
+            type: number
+            format: double
+            minimum: 0
+      responses:
+        '200':
+          description: Straničena lista proizvoda
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPage'
+
+    post:
+      operationId: createProduct
+      summary: Dodaj novi proizvod
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Proizvod kreiran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /products/{id}:
+    get:
+      operationId: getProductById
+      summary: Dohvati proizvod po ID-u
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Proizvod pronađen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      operationId: updateProduct
+      summary: Ažuriraj proizvod
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '200':
+          description: Proizvod ažuriran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      operationId: deleteProduct
+      summary: Obriši proizvod
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Proizvod obrisan
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /orders:
+    get:
+      operationId: getOrders
+      summary: Dohvati sve narudžbe
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: status
+          in: query
+          description: Filter po statusu narudžbe
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: Straničena lista narudžbi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createOrder
+      summary: Kreiraj novu narudžbu
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Narudžba kreirana
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Nedovoljno zaliha za jedan ili više proizvoda
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}:
+    get:
+      operationId: getOrderById
+      summary: Dohvati narudžbu po ID-u
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Narudžba pronađena
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      operationId: updateOrderStatus
+      summary: Ažuriraj status narudžbe
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+      responses:
+        '200':
+          description: Status narudžbe ažuriran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      operationId: deleteOrder
+      summary: Otkaži narudžbu
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Narudžba otkazana
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token dobiven putem /auth/login endpointa
+
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: Jedinstveni identifikator resursa
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+
+    PageParam:
+      name: page
+      in: query
+      description: Broj stranice (počinje od 0)
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+
+    SizeParam:
+      name: size
+      in: query
+      description: Broj elemenata po stranici
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+
+    SortParam:
+      name: sort
+      in: query
+      description: "Polje i smjer sortiranja (npr. createdAt,desc)"
+      schema:
+        type: string
+        example: createdAt,desc
+
+
+  responses:
+    BadRequest:
+      description: Neispravan zahtjev — pogreška u validaciji podataka
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Korisnik nije autenticiran ili je token istekao
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Traženi resurs nije pronađen
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+
+  schemas:
+
+
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Adrian Brnić
+        email:
+          type: string
+          format: email
+          example: adrian.brnic@fer.hr
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "jakotajnalozinka123"
+        phone:
+          type: string
+          pattern: '^\+?[0-9]{7,15}$'
+          example: "+38591000000"
+        birthday:
+          type: string
+          format: date
+          example: "2002-05-26"
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: adrian.brnic@fer.hr
+        password:
+          type: string
+          format: password
+          example: "jakotajnalozinka123"
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT Bearer token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: Trajanje tokena u sekundama
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Adrian Brnić
+        email:
+          type: string
+          format: email
+          example: adrian.brnic@fer.hr
+        phone:
+          type: string
+          example: "+38591000000"
+        birthday:
+          type: string
+          format: date
+          example: "2002-05-26"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-03-10T12:00:00Z"
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Adrian Brnić
+        phone:
+          type: string
+          pattern: '^\+?[0-9]{7,15}$'
+          example: "+38591000000"
+        birthday:
+          type: string
+          format: date
+          example: "2002-05-26"
+
+    UserPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+
+    CreateProductRequest:
+      type: object
+      required:
+        - name
+        - price
+        - stock
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Bežični miš
+        description:
+          type: string
+          example: Bežični miš s dongle USB prijemnikom
+        price:
+          type: number
+          format: double
+          minimum: 0
+          exclusiveMinimum: true
+          example: 10.00
+        stock:
+          type: integer
+          minimum: 0
+          example: 10
+
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Maskica za mobitel
+        description:
+          type: string
+          example: Maskica za mobitel iPhone 13
+        price:
+          type: number
+          format: double
+          example: 8.00
+        stock:
+          type: integer
+          example: 20
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-03-10T12:00:00Z"
+
+    ProductPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponse'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+
+    OrderStatus:
+      type: string
+      enum:
+        - CREATED
+        - PAID
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+      example: CREATED
+
+    OrderItemRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: integer
+          format: int64
+          minimum: 1
+          example: 2
+        quantity:
+          type: integer
+          minimum: 1
+          example: 3
+
+    OrderItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        productId:
+          type: integer
+          format: int64
+          example: 2
+        productName:
+          type: string
+          example: Bežični miš
+        unitPrice:
+          type: number
+          format: double
+          example: 10.00
+        quantity:
+          type: integer
+          example: 3
+        subtotal:
+          type: number
+          format: double
+          example: 30.00
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - userId
+        - items
+      properties:
+        userId:
+          type: integer
+          format: int64
+          minimum: 1
+          example: 1
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          example: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemResponse'
+        totalPrice:
+          type: number
+          format: double
+          example: 30.00
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-03-10T12:00:00Z"
+
+    OrderPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponse'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+
+    PageMetadata:
+      type: object
+      properties:
+        number:
+          type: integer
+          description: Trenutna stranica (od 0)
+          example: 0
+        size:
+          type: integer
+          description: Broj elemenata po stranici
+          example: 20
+        totalElements:
+          type: integer
+          format: int64
+          description: Ukupan broj elemenata
+          example: 42
+        totalPages:
+          type: integer
+          description: Ukupan broj stranica
+          example: 3
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-03-18T10:00:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Korisnik s ID-om 5 nije pronađen
+        path:
+          type: string
+          example: /api/users/5
